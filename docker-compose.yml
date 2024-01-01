@@ -1,0 +1,15 @@
+version: "3.8"
+
+networks:
+  default:
+    driver: bridge
+
+services:
+
+  mongo:
+    image: mongo:4.2.16-bionic
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=mongodb
+    ports:
+      - "27020:27017"

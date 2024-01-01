@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web Page</title>
+
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+
+<body>
+
+<header>
+    <h1>My Currency Exchange Page</h1>
+</header>
+
+<main>
+    <form id="currencyForm">
+        <label for="fromCurrency">From:</label>
+        <select id="fromCurrency" name="fromCurrency" required>
+            {{template "currencyOptions.html"}}
+        </select>
+
+        <label for="toCurrency">To:</label>
+        <select id="toCurrency" name="toCurrency" required>
+            {{template "currencyOptions.html"}}
+        </select>
+
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date" placeholder="YYYY-MM-DD" required disabled style="background: #d9d6d6;" >
+
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" name="amount" required>
+
+        <button type="button" id="convertButton">Convert</button>
+    </form>
+
+    <div id="result"></div>
+    <div id="exitButtons" style="display: none;">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+</main>
+<script type="text/javascript" src="/static/script.js"></script>
+
+</body>
+
+</html>

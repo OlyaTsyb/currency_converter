@@ -2,8 +2,8 @@ package mongo
 
 import (
 	"context"
+	"errors"
 	"example/web-service-gin/models"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,8 +14,12 @@ import (
 
 var client *mongo.Client
 
+func init() {
+	ConnectDB()
+}
+
 func ConnectDB() {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27020")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	var err error
 	client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
@@ -29,41 +33,49 @@ func ConnectDB() {
 	log.Println("Connected to MongoDB!")
 }
 
-func InsertRate(rate models.Rate) {
-	rate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
+func InsertRate(exchange models.Exchange) {
+	exchange.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 	collection := client.Database("mongodb").Collection("rates")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := collection.InsertOne(ctx, rate)
+	_, err := collection.InsertOne(ctx, exchange)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 }
 
-func GetRateByCurrencyCode(code string) (float64, error) {
+func GetRateByCurrencyCode(code, toCurrency, date string) (float64, error) {
 	collection := client.Database("mongodb").Collection("rates")
-	filter := bson.M{"currency.code": code}
 
-	var result models.Rate
-	err := collection.FindOne(context.TODO(), filter).Decode(&result)
+	dateObj, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return 0, err
 	}
 
-	fmt.Printf("Rate: %f\n", result.Currency.Rate)
-	return result.Currency.Rate, nil
-}
-func ClearRatesTable() error {
-	collection := client.Database("mongodb").Collection("rates")
+	startOfDay := time.Date(dateObj.Year(), dateObj.Month(), dateObj.Day(), 0, 0, 0, 0, dateObj.Location())
+	endOfDay := startOfDay.Add(24 * time.Hour).Add(-time.Nanosecond)
 
-	_, err := collection.DeleteMany(context.TODO(), bson.D{})
-	if err != nil {
-		log.Fatal(err)
-		return err
+	filter := bson.M{
+		"currency": code,
+		"timestamp": bson.M{
+			"$gte": primitive.NewDateTimeFromTime(startOfDay),
+			"$lt":  primitive.NewDateTimeFromTime(endOfDay),
+		},
 	}
 
-	log.Println("Rates table cleared")
-	return nil
+	var result models.Exchange
+	err = collection.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		return 0, err
+	}
+
+	rates := result.Rates
+
+	if rate, ok := rates[toCurrency]; ok {
+		return rate.Rate, nil
+	}
+
+	return 0, errors.New("no rate found for the specified toCurrency")
 }

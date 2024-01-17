@@ -1,15 +1,41 @@
 version: "3.8"
 
-networks:
-  default:
-    driver: bridge
-
 services:
 
-  mongo:
-    image: mongo:4.2.16-bionic
-    restart: unless-stopped
-    environment:
-      - MONGO_INITDB_DATABASE=mongodb
+  redis:
+    image: library/redis:6.2.4-alpine
+    restart: always
     ports:
-      - "27020:27017"
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis:/data
+    networks:
+      - my_network
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_USERNAME=mongodb
+      - MONGO_PASSWORD=mongodb
+      - MONGO_URI=mongodb://127.0.0.1:27017
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./volumes/mongodb:/data
+    networks:
+      - my_network
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file: .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    restart: always
+    networks:
+      - my_network
+
+networks:
+  my_network:

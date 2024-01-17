@@ -42,7 +42,9 @@ func getEnv(key, defaultValue string) string {
 }
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	r := setupRouter()
+
 	err := r.Run(":8080")
 	if err != nil {
 		return

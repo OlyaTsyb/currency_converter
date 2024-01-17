@@ -10,9 +10,10 @@ import (
 	"time"
 )
 
-func GetRatesFromAPI(fromCurrency string) (map[string]models.Rate, error) {
-	apiUrls := fmt.Sprintf("https://www.floatrates.com/daily/%s.json", url.QueryEscape(fromCurrency))
-	response, err := http.Get(apiUrls)
+func GetRatesFromAPI(fromCurrency, date string) ([]models.Exchange, error) {
+	apiURL := fmt.Sprintf("https://www.floatrates.com/daily/%s.json", url.QueryEscape(fromCurrency))
+	response, err := http.Get(apiURL)
+
 	if err != nil {
 		return nil, err
 	}
@@ -22,19 +23,28 @@ func GetRatesFromAPI(fromCurrency string) (map[string]models.Rate, error) {
 		return nil, fmt.Errorf("non-OK status: %s", response.Status)
 	}
 
-	var data map[string]models.Currency
+	var data map[string]models.Rate
+
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&data); err != nil {
 		return nil, err
 	}
 
-	rates := make(map[string]models.Rate)
-	for key, value := range data {
-		var rate models.Rate
-		rate.Currency = value
-		rate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
-		rates[key] = rate
+	timestamp := primitive.NewDateTimeFromTime(time.Now())
+	var exchanges []models.Exchange
+
+	exchange := models.Exchange{
+		Rates:     make(map[string]models.Rate),
+		Currency:  fromCurrency,
+		Timestamp: timestamp,
 	}
 
-	return rates, nil
+	for key, value := range data {
+		value.Date = date
+		exchange.Rates[key] = value
+	}
+
+	exchanges = append(exchanges, exchange)
+
+	return exchanges, nil
 }

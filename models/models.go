@@ -4,7 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Currency struct {
+type Rate struct {
 	Code        string  `json:"code"`
 	AlphaCode   string  `json:"alphaCode"`
 	NumericCode string  `json:"numericCode"`
@@ -14,8 +14,9 @@ type Currency struct {
 	InverseRate float64 `json:"inverseRate"`
 }
 
-type Rate struct {
+type Exchange struct {
 	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Currency  Currency           `json:"currency"`
+	Rates     map[string]Rate    `json:"rates"`
+	Currency  string             `json:"currency"`
 	Timestamp primitive.DateTime `json:"timestamp"`
 }

@@ -31,6 +31,8 @@ func setupRouter() *gin.Engine {
 
 	r.GET("/convert", handlers.HandleConvertRequest)
 
+	r.GET("/history", handlers.CurrencyHistoryHandler)
+
 	return r
 }
 

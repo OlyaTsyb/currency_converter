@@ -46,7 +46,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	//gocron.Every(15).Minute().Do(main.Task)
-	gocron.Every(1).Day().At("23:00").Do(Task)
+	gocron.Every(1).Day().At("00:01").Do(Task)
 	<-gocron.Start()
 
 }

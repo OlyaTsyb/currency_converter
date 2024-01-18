@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Conversion Chart</title>
+
+    <link rel="stylesheet" type="text/css" href="/static/historyPage.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        th {
+            background-color: #e0e5e9;
+            text-align: center;
+            color: #286090;
+            padding: 6px 10px 6px 10px;
+            font-family: verdana;
+            font-size: 14pt;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #dceaf7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <p class="showing-rates title">Currency Historical Lookup</p>
+            <form class="form-inline" action="/chart" method="get">
+                <div class="form-group mx-2">
+                    <label for="dateInput" class="showing-rates">Date:</label>
+                    <input type="date" class="form-control" id="dateInput" name="date" placeholder="YYYY-MM-DD">
+                </div>
+                <div class="form-group mx-2">
+                    <label for="currencyInput" class="showing-rates">Currency:</label>
+                    <select id="currencyInput" name="from" class="form-control" required>
+                        {{template "currencyOptions.html"}}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <div class="form-inline mt-2">
+                <button class="btn btn-outside" onclick="location.href='/index'">Go to Convertor</button>
+            </div>
+
+        </div>
+
+        <div class="col-8">
+            <p class="showing-rates title">Showing rates for <span id="showingCurrency" class="currency-code title">
+                {{.fromCurrency}}</span> on <span id="showingDate">{{.selectedDate}}</span>
+            </p>
+
+            <table class="table mt-4">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Numeric Code</th>
+                    <th class="currency-code"> 1 {{.fromCurrency}}</th>
+                    <th class="currency-code">In {{.fromCurrency}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{ range $currency, $rate := .rates }}
+                <tr>
+                    <td>{{ $rate.Name }}</td>
+                    <td>{{ $rate.AlphaCode }}</td>
+                    <td>{{ $rate.NumericCode }}</td>
+                    <td>{{ $rate.Rate }}</td>
+                    <td>{{ $rate.InverseRate }}</td>
+                </tr>
+                {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

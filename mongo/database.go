@@ -79,3 +79,41 @@ func GetRateByCurrencyCode(code, toCurrency, date string) (float64, error) {
 
 	return 0, errors.New("no rate found for the specified toCurrency")
 }
+
+func GetRateByCurrencyCodeAndDate(code, date string) (map[string]models.Rate, error) {
+	collection := client.Database("mongodb").Collection("rates")
+	dateObj, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return nil, err
+	}
+
+	startOfDay := time.Date(dateObj.Year(), dateObj.Month(), dateObj.Day(), 0, 0, 0, 0, dateObj.Location())
+	endOfDay := startOfDay.Add(24 * time.Hour).Add(-time.Nanosecond)
+
+	filter := bson.M{
+		"currency": code,
+		"timestamp": bson.M{
+			"$gte": primitive.NewDateTimeFromTime(startOfDay),
+			"$lt":  primitive.NewDateTimeFromTime(endOfDay),
+		},
+	}
+
+	cur, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var result models.Exchange
+	rates := make(map[string]models.Rate)
+
+	for cur.Next(context.Background()) {
+		err := cur.Decode(&result)
+		if err != nil {
+			return nil, err
+		}
+
+		rates = result.Rates
+	}
+
+	return rates, nil
+}

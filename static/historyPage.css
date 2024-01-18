@@ -1,0 +1,80 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background-color: #f5f5f5;
+}
+
+.title {
+    color: #286090 !important;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.showing-rates {
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.form-inline {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fcefee;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 25px;
+}
+
+.form-group {
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+
+.btn-primary {
+    border-radius: 5px;
+    background-color: #87b9f1 !important;
+    border-color: #76b1ef !important;
+    padding: 8px 16px!important;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #568dc9!important;
+    border-color: #508ed0!important;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.currency-code {
+    text-transform: uppercase;
+}
+
+
+.btn-outside {
+    border-radius: 5px;
+    background-color: #e0e5e9;
+    border-color: #e0e5e9;
+    color: #286090;
+    padding: 8px 16px;
+    margin-top: 10px;
+}
+
+.btn-outside:hover {
+    background-color: #c4ccd2;
+    border-color: #c4ccd2;
+}

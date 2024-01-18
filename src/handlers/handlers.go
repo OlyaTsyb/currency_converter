@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func HandleConvertRequest(c *gin.Context) {
@@ -69,6 +70,46 @@ func HandleConvertRequest(c *gin.Context) {
 func WelcomeHandler(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "welcomePage.html", nil)
+}
+
+func CurrencyHistoryHandler(c *gin.Context) {
+	mongo.ConnectDB()
+
+	code := c.Query("from")
+
+	date := c.Query("date")
+	if code == "" || code == "0" {
+		code = "usd"
+	}
+
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	} else {
+		parsedDate, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			log.Println("Failed to parse date:", err)
+			date = time.Now().Format("2006-01-02")
+		} else {
+			fmt.Println("Parsed date:", parsedDate)
+		}
+	}
+
+	fmt.Printf("From: %s, Date: %s\n", code, date)
+
+	targetRate, err := mongo.GetRateByCurrencyCodeAndDate(code, date)
+	if err != nil {
+		log.Fatal(err)
+		c.String(http.StatusInternalServerError, "Failed to fetch rate from the database")
+		return
+	}
+
+	data := gin.H{
+		"rates":        targetRate,
+		"fromCurrency": code,
+		"selectedDate": date,
+	}
+
+	c.HTML(http.StatusOK, "chart.html", data)
 }
 
 func IndexHandler(c *gin.Context) {

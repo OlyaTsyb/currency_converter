@@ -12,10 +12,13 @@
 <body>
 
 <header>
-    <h1>My Currency Exchange Page</h1>
+    <h1>Currency Exchange Page</h1>
 </header>
 
 <main>
+    <div class="form-inline mt-2">
+        <button class="btn btn-outside" onclick="location.href='/history'">Historical Lookup</button>
+    </div>
     <form id="currencyForm">
         <label for="fromCurrency">From:</label>
         <select id="fromCurrency" name="fromCurrency" required>
@@ -42,6 +45,7 @@
         <button id="noBtn">Exit</button>
     </div>
 </main>
+
 <script type="text/javascript" src="/static/script.js"></script>
 
 </body>
